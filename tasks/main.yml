@@ -1,0 +1,109 @@
+---
+# tasks file for jupyterhub
+
+
+# Requiered packages: npm, nodejs, python3
+
+- name: Install required packages for JupyterHub
+  become: yes
+  apt:
+    name:
+      - nodejs
+      - npm
+      - python3
+      - python3-pip
+    state: latest
+    update_cache: yes
+
+# Configuration directory
+
+- name: Create JupyterHub config directory
+  become: yes
+  file:
+    path: /etc/jupyterhub
+    state: directory
+    owner: ubuntu
+    group: ubuntu
+    mode: '0775'
+
+# Install proxy
+
+- name: Generate JupyterHub config
+  become: yes  
+  command: npm install -g configurable-http-proxy
+
+  args:
+   chdir: /etc/jupyterhub
+
+# Extract configuration from template
+
+#- name: Create JupyterHub configuration file
+ # template:
+  #  src: jupyterhub_config.py.j2
+  #  dest: /etc/jupyterhub/jupyterhub_config.py
+  #  owner: root
+  #  group: root
+  #  mode: '0644'
+  #vars:
+   # jupyterhub_port: 8001
+
+# Install juoyterlab, notebook and jupyterhub
+
+- name: Install jupyter hub
+  ansible.builtin.pip:
+    name:
+      - jupyterlab
+      - notebook
+      - jupyterhub
+    executable: pip
+
+# Erase config
+ 
+- name: Delete temporary config file
+  file:
+    path: /etc/jupyterhub/jupyterhub_config.py
+    state: absent
+
+# Generate config
+
+- name: Generate JupyterHub config
+  become: yes  
+  command: jupyterhub --generate-config
+
+  args:
+   chdir: /etc/jupyterhub
+
+# Modify config
+
+- name: Edit JupyterHub config with our settings
+  lineinfile:
+
+    path: /etc/jupyterhub/jupyterhub_config.py
+    regexp: "c.JupyterHub.port"
+    line: 'c.JupyterHub.port = {{ jupyterhub_port }}'
+ 
+  notify:
+    - Restart JupyterHub
+
+# Create service file
+
+- name: Copy systemd service file to server
+  copy:
+    src: jupyterhub.service
+    dest: /etc/systemd/system
+    owner: ubuntu
+    group: ubuntu
+
+# Task for JupyterHub service
+
+- name: Configure JupyterHub service
+  become: yes
+  systemd:
+    name: jupyterhub.service
+    enabled: yes
+    state: started
+    daemon_reload: yes
+  
+  notify:
+    - Restart JupyterHub
+

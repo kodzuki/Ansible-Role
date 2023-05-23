@@ -1,0 +1,10 @@
+---
+# handlers file for jupyterhub
+
+
+# Handler for Jupyter service
+
+- name: Restart JupyterHub
+  systemd:
+    name: jupyterhub.service
+    state: restarted

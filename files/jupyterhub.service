@@ -1,0 +1,14 @@
+
+[Unit]
+Description=JupyterHub
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/jupyterhub
+User=ubuntu
+Group=ubuntu
+Restart=always
+RestartSec=5s
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,4 @@
+---
+# defaults file for jupyterhub
+
+jupyterhub_port : 8001

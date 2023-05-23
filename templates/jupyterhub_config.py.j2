@@ -1,0 +1,11 @@
+
+## The public facing port of the proxy.
+#  
+#          This is the port on which the proxy will listen.
+#          This is the only port through which JupyterHub
+#          should be accessed by users.
+#  
+#          .. deprecated: 0.9
+#              Use JupyterHub.bind_url
+#  Default: 8000
+c.JupyterHub.port = {{jupyterhub_port}}
