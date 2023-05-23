@@ -1,7 +1,7 @@
 Role Name
 =========
 
-A brief description of the role goes here.
+This is a role for the automatic deployement and configuration of a JupyterHub service to multiple nodes using Ansible.
 
 Requirements
 ------------
